@@ -1,0 +1,127 @@
+﻿@{
+    Layout = "~/_Layout.cshtml";
+    Page.Title = "Edit a Scripture Journal Entry";
+
+    var book = "";
+    var chapter = "";
+    var verse = "";
+    var note = "";
+    var scriptureId = "";
+    DateTime date = DateTime.MinValue;
+
+
+    if (!IsPost)
+    {
+        if (!Request.QueryString["ID"].IsEmpty() && Request.QueryString["ID"].IsInt())
+        {
+            scriptureId = Request.QueryString["ID"];
+            var db = Database.Open("Scriptures");
+            var dbCommand = "SELECT * FROM ScriptureTable WHERE ID = @0";
+            var row = db.QuerySingle(dbCommand, scriptureId);
+
+            if (row != null)
+            {
+                book = row.Book;
+                chapter = row.Chapter;
+                verse = row.Verse;
+                note = row.Note;
+                date = row.Date;
+            }
+            else
+            {
+                Validation.AddFormError("No scripture journal entry was found for that ID.");
+            }
+        }
+        else
+        {
+            Validation.AddFormError("No scripture journal entry was found for that ID.");
+        }
+    }
+
+    if (IsPost)
+    {
+        Validation.RequireField("book", "You must enter a book");
+        Validation.RequireField("chapter", "You must enter a chapter");
+        Validation.RequireField("verse", "You must enter a verse");
+        Validation.RequireField("note", "You must enter a note");
+
+        Validation.Add("chapter", Validator.Integer("You must enter a number"));
+        Validation.Add("verse", Validator.Integer("You must enter a number"));
+
+        book = Request.Form["book"];
+        chapter = Request.Form["chapter"];
+        verse = Request.Form["verse"];
+        note = Request.Form["note"];
+        scriptureId = Request.Form["scriptureId"];
+        date = DateTime.Now;
+
+        if (Validation.IsValid())
+        {
+            var db = Database.Open("Scriptures");
+            var updateCommand = "UPDATE ScriptureTable SET Book=@0, Chapter=@1, Verse=@2, Note=@3, Date=@4 WHERE Id=@5";
+            db.Execute(updateCommand, book, chapter, verse, note, date, scriptureId);
+            Response.Redirect("~/ScriptureJournal");
+        }
+    }
+}
+
+<h2>Edit a Scripture Journal Entry</h2>
+<form method="post">
+    <fieldset>
+        <div class="row">
+            <div class="col-2">
+                <label for="book">Book:</label>
+            </div>
+            <div class="col-8">
+                <input type="text" name="book" value="@book" />
+            </div>
+            <div class="col-10">
+                @Html.ValidationMessage("book")
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-2">
+                <label for="chapter">Chapter:</label>
+            </div>
+            <div class="col-8">
+                <input type="text" name="chapter" value="@chapter" />
+            </div>
+            <div class="col-10">
+                @Html.ValidationMessage("chapter")
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-2">
+                <label for="verse">Verse:</label>
+            </div>
+            <div class="col-8">
+                <input type="text" name="verse" value="@verse" />
+            </div>
+            <div class="col-10">
+                @Html.ValidationMessage("verse")
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-2">
+                <label for="note">Note:</label>
+            </div>
+            <div class="col-8">
+                <input type="text" name="note" value="@note" />
+            </div>
+            <div class="col-10">
+                @Html.ValidationMessage("note")
+            </div>
+        </div>
+        <input type="hidden" name="scriptureid" value="@scriptureId" />
+        <div class="col-10">
+            <input type="submit" name="buttonSubmit" value="Submit Changes" class="button-main" />
+        </div>
+        
+    </fieldset>
+</form>
+<div class="row">
+    <div class="col-10">
+        <a href="~/ScriptureJournal" class="">Return to scripture journal listing</a>
+    </div>
+</div>

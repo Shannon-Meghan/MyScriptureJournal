@@ -1,0 +1,36 @@
+﻿@import url('https://fonts.googleapis.com/css?family=Rozha+One');
+@import url('https://fonts.googleapis.com/css?family=Lato');
+.header-font {
+    font-family: "Rozha One", serif;
+}
+.body-font {
+    font-family: "Lato", sans-serif;
+}
+.color-bg {
+    color: white;
+}
+
+.color-main-bg {
+    background-color: #CDF7B9;
+}
+
+.color-main {
+    color: #CDF7B9;
+}
+
+fieldset {
+    border: 3px solid #4B95FB;
+}
+
+.button-main {
+    background-color: #3B3B3B;
+    color: white;
+    padding: 10px 10px 10px 10px;
+    border: none;
+}
+.button-main:hover {
+    background-color: #1A1A1A;
+    color: white;
+    padding: 10px 10px 10px 10px;
+    border: none;
+}

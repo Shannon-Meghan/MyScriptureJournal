@@ -1,0 +1,84 @@
+﻿@{
+    Layout = "~/_Layout.cshtml";
+    Page.Title = "Scripture Journal";
+
+    var db = Database.Open("Scriptures");
+    var selectCommand = "SELECT * FROM ScriptureTable";
+    var searchTerm = Request.Form["searchBook"];
+    //Search by Book
+    if (!Request.QueryString["searchBook"].IsEmpty())
+    {
+        selectCommand = "SELECT * FROM ScriptureTable WHERE Book LIKE @0";
+        searchTerm = "%" + Request["searchBook"] + "%";
+
+    }
+    //Search by Keyword
+    if (!Request.QueryString["searchKeyword"].IsEmpty())
+    {
+        selectCommand = "SELECT * FROM ScriptureTable WHERE Note LIKE @0";
+        searchTerm = "%" + Request["searchKeyword"] + "%";
+    }
+
+    var selectedData = db.Query(selectCommand, searchTerm);
+    var grid = new WebGrid(source: selectedData, defaultSort: "Book", rowsPerPage: 5);
+
+}
+<div class="grid">
+    <div class="row">
+        <h2>Main Page</h2>
+    </div>
+    <div class="row">
+        <form method="get">
+            <fieldset>
+                <div class="col-3">
+                    <label for="SearchBook">Search by book:</label>
+                </div>
+                <div class="col-3">
+                    <input type="text" name="searchBook" value="@Request.QueryString["searchBook"]" />
+                </div>
+                <div class="col-3">
+                    <input type="Submit" value="Search Book" class="button-main" />
+                </div>
+            </fieldset>
+        </form>
+    </div>    
+    <div class="row">
+        <form method="get">
+            <fieldset>
+                <div class="col-3">
+                    <label for="SearchKeyword">Search by keyword:</label>
+                </div>
+                <div class="col-3">
+                    <input type="text" name="searchKeyword" value="@Request.QueryString["searchKeyword"]" />
+                </div>
+                <div class="col-3">
+                    <input type="Submit" value="Search Keyword" class="button-main" />
+                </div>
+            </fieldset>
+        </form>
+    </div>    
+    <div id="grid" class="row">
+        <fieldset>
+            @grid.GetHtml(
+                tableStyle: "grid",
+                headerStyle: "head",
+                alternatingRowStyle: "alt",
+                columns: grid.Columns(
+                grid.Column(format: @<a href="~/EditScripture?id=@item.ID">Edit</a>),
+                  grid.Column("Book"),
+                  grid.Column("Chapter", canSort: false),
+                  grid.Column("Verse", canSort: false),
+                  grid.Column("Note", canSort: false),
+                  grid.Column("Date"),
+                  grid.Column(format: @<a href="~/DeleteScripture?id=@item.ID">Delete</a>)
+                )
+            )
+        </fieldset>
+        </div>
+    <div class="row">
+        <div class="col-10">
+            <a href="~/AddScripture" id="addScripture" class="button-main">Add a scripture</a>
+        </div>        
+    </div>            
+</div>
+

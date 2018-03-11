@@ -1,0 +1,108 @@
+﻿@{
+    Layout = "~/_Layout.cshtml";
+    Page.Title = "Delete a Scripture Journal Entry";
+
+    var book = "";
+    var chapter = "";
+    var verse = "";
+    var note = "";
+    DateTime date = DateTime.MinValue;
+
+    var scriptureId = "";
+
+    if (!IsPost)
+    {
+        if (!Request.QueryString["ID"].IsEmpty() && Request.QueryString["ID"].IsInt())
+        {
+            scriptureId = Request.QueryString["ID"];
+            var db = Database.Open("Scriptures");
+            var dbCommand = "SELECT * FROM ScriptureTable WHERE ID = @0";
+            var row = db.QuerySingle(dbCommand, scriptureId);
+            if (row != null)
+            {
+                book = row.Book;
+                chapter = row.Chapter;
+                verse = row.Verse;
+                note = row.Note;
+                date = row.Date;
+            }
+            else
+            {
+                Validation.AddFormError("No scripture journal entry was found for that ID.");
+            }
+        }
+        else
+        {
+            Validation.AddFormError("No scripture journal entry was found for that ID.");
+        }
+    }
+
+    if (IsPost && !Request["buttonDelete"].IsEmpty())
+    {
+        scriptureId = Request.Form["scriptureId"];
+        var db = Database.Open("Scriptures");
+        var deleteCommand = "DELETE FROM ScriptureTable WHERE ID = @0";
+        db.Execute(deleteCommand, scriptureId);
+        Response.Redirect("~/ScriptureJournal");
+    }
+}
+<h2>Delete a Scripture Journal Entry</h2>
+@Html.ValidationSummary()
+
+<form method="post">
+    <fieldset>
+        <div class="row">
+            <div class="col-2">
+                <span>Book:</span>
+            </div>
+            <div class="col-8">
+                <span>@book</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-2">
+                <span>Chapter:</span>
+            </div>
+            <div class="col-8">
+                <span>@chapter</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-2">
+                <span>Verse:</span>
+            </div>
+            <div class="col-8">
+                <span>@verse</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-2">
+                <span>Note:</span>
+            </div>
+            <div class="col-8">
+                <span>@note</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-2">
+                <span>Date:</span>
+            </div>
+            <div class="col-8">
+                <span>@date</span>
+            </div>
+        </div>
+        <div>
+            <input type="hidden" name="scriptureId" value="@scriptureId" />
+        </div>
+        <div class="row">
+            <div class="col-10">
+                <input type="submit" name="buttonDelete" value="Delete Scripture Journal Entry" class="button-main" />
+            </div>
+        </div>
+    </fieldset>
+    <div class="row">
+        <div class="col-10">
+            <a href="~/ScriptureJournal" class="">Return to scripture journal entry listing</a>
+        </div>
+    </div>
+</form>

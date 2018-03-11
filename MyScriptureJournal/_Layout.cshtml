@@ -1,0 +1,24 @@
+﻿<!DOCTYPE html>
+<html>
+<head class="header color-main">
+    <title>@Page.Title</title>
+    @RenderSection("head", required: false)
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="~/Styles/main.css">
+    <link rel="stylesheet" type="text/css" href="~/Styles/format.css">
+
+</head>
+<body>
+    <header class="wrapper-header color-main-bg header-font">
+        <div class="wrapper-side"><p class="color-main">empty</p></div>
+        <div class="wrapper">
+            <h1>Scripture Journal</h1>
+        </div>        
+    </header>
+    <div class="wrapper-side"><p class="color-bg">empty</p></div>
+    <div class="wrapper body-font">
+        @RenderBody()
+    </div>
+    <div class="wrapper-side"><p class="color-bg">empty</p></div>
+</body>
+</html>

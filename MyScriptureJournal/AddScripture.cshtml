@@ -1,0 +1,89 @@
+﻿@{
+    Layout = "~/_Layout.cshtml";
+    Page.Title = "Add a Scripture Journal Entry";
+
+    Validation.RequireField("book", "You must enter a book");
+    Validation.RequireField("chapter", "You must enter a chapter");
+    Validation.RequireField("verse", "You must enter a verse");
+    Validation.RequireField("note", "You must enter a note");
+
+    Validation.Add("chapter", Validator.Integer("You must enter a number"));
+    Validation.Add("verse", Validator.Integer("You must enter a number"));
+
+    string book = "";
+    string chapter = "";
+    string verse = "";
+    string note = "";
+
+
+    if (IsPost && Validation.IsValid())
+    {
+        book = Request.Form["book"];
+        chapter = Request.Form["chapter"];
+        verse = Request.Form["verse"];
+        note = Request.Form["note"];
+        var date = DateTime.Now;
+
+        var db = Database.Open("Scriptures");
+        var insertCommand = "INSERT INTO ScriptureTable (Book, Chapter, Verse, Note, Date) Values(@0, @1, @2, @3, @4)";
+        db.Execute(insertCommand, book, chapter, verse, note, date);
+        Response.Redirect("~/ScriptureJournal");
+    }
+}
+
+<h2>Add a Scripture Journal Entry</h2>
+<form method="post">
+    <fieldset>
+        <div class="row">
+            <div class="col-2">
+                <label for="book">Book:</label>
+            </div>
+            <div class="col-7">
+                <input type="text" name="book" value="@Request.Form["book"]" />
+            </div>
+            <div class="col-10">
+                @Html.ValidationMessage("book")
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-2">
+                <label for="chapter">Chapter:</label>
+            </div>
+            <div class="col-8">
+                <input type="text" name="chapter" value="@Request.Form["chapter"]" />
+            </div>
+            <div class="col-10">
+                @Html.ValidationMessage("chapter")
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-2">
+                <label for="verse">Verse:</label>
+            </div>
+            <div class="col-8">
+                <input type="text" name="verse" value="@Request.Form["verse"]" />
+            </div>
+            <div class="col-10">
+                @Html.ValidationMessage("verse")
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-2">
+                <label for="note">Note:</label>
+            </div>
+            <div class="col-8">
+                <input type="text" name="note" value="@Request.Form["note"]" />
+            </div>
+            <div class="col-10">
+                @Html.ValidationMessage("note")
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-10">
+                <input type="submit" name="buttonSubmit" value="Add Scripture Journal" class="button-main" />
+            </div>
+        </div>
+    </fieldset>
+</form>
